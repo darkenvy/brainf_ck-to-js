@@ -6,7 +6,7 @@ let inInput = fs.readFileSync('in/program_input.txt', 'utf8');
 let inFile  = fs.readFileSync('in/program.bf',        'utf8');
 let outFile = '';
 let inputEOF = false;
-let infDetect = 0; // Determines how tight to exit app when program_input ends. 0 quits on EOF
+let infDetect = 1; // Determines how tight to exit app when program_input ends. 1 quits on EOF
 inReel = JSON.parse(inReel).reel;
 inFile = inFile.split('');
 
@@ -37,7 +37,6 @@ outFile += `
 for (let i=0; i<inFile.length; i++) {
   let cmd = inFile[i];
   // console.log('curr: ', i);
-  console.log('INF: ', infDetect);
   if (infDetect == 0) {
     i=inFile.length;
     console.log('Inf-Loop detected. Finished program');
@@ -46,11 +45,11 @@ for (let i=0; i<inFile.length; i++) {
   switch(cmd) {
     case '>':
       simReel.right();
-      outFile += 'reel.left();\n';
+      outFile += 'reel.right();\n';
       break;
     case '<':
       simReel.left();
-      outFile += 'reel.right();\n';
+      outFile += 'reel.left();\n';
       break;
     case '+':
       simReel.add();
@@ -65,26 +64,28 @@ for (let i=0; i<inFile.length; i++) {
       outFile += 'reel.output();\n';
       break;
     case ',':
-      if (inputEOF) {
-        infDetect -= 1; break;
-      }
+      if (inputEOF) {infDetect -= 1; break;}
       outFile += 'reel.input();\n';
       let checkEOF = simReel.input();
       if (checkEOF == -1) inputEOF = true;
       break;
     case '[':
-      // outFile += '[';
+      i = simReel.findNextBracket(inFile, i);
       break;
     case ']':
       i = simReel.findPrevBracket(inFile, i);
       break;
-    case '!':
-      console.log('Node reached the end of the file');
-      process.exit();
   }
 }
 
-setTimeout(function() {
-  console.log('wrote file');
-  fs.writeFile('out/program.js', outFile);
-},1000)
+
+// --------- Truncator before Saving ---------- //
+
+// Find canceling out phrases
+
+// Truncate multiples into single command with arguments
+
+console.log('wrote file');
+fs.writeFile('out/program.js', outFile);
+// setTimeout(function() {
+// },1000)

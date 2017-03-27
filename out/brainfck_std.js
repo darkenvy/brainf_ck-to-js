@@ -80,27 +80,37 @@ module.exports = function Tape(arr, input, options) {
       return currIdx;
     }
 
-    // We are looking for the [ bracket
-    // We start at the current idx given to us
-    // We NEED to find the matching bracket
+    // We are looking for the [ bracket. We start at the current idx given to us .We NEED to find the matching bracket
     for (var k=currIdx-1, brackets=0; k>-1; k--) {
-      // every time we find a ], we need to increment brackets
-      // this way, we can find the pairs
-      // console.log(k);
+      // every time we find a ], we need to increment brackets. this way, we can find the pairs
       if (instructions[k] === ']') {
-        // console.log('inside 1');
         brackets += 1;
       } else if (instructions[k] === '[' && brackets > 0) {
-        // console.log('inside 2');
-        // We found a bracket. But it's not ours. So we decrement and continue
-        brackets -= 1;
+        brackets -= 1; // We found a bracket. But it's not ours. So we decrement and continue
       } else if (instructions[k] === '[' && brackets == 0) {
-        // console.log('inside 3', 'returning ', k);
-        // only return k if all matching brackets have been paired up
+        return k; // only return k if all matching brackets have been paired up
+      }
+    }
+
+    return null; // We should never see this. For debugging.
+  }
+
+  this.findNextBracket = function(instructions, currIdx) {
+    if (reel[currIdx] != 0 && reel[currIdx] != undefined) {
+      return currIdx;
+    }
+    // Look for next bracket if the current cell is nonzero
+    for (var k=currIdx+1, brackets=0; k<instructions.length; k++) {
+      if (instructions[k] === '[') {
+        brackets += 1;
+      } else if (instructions[k] === ']' && brackets > 0) {
+        brackets -= 1;
+      } else if (instructions[k] === ']' && brackets == 0) {
         return k;
       }
     }
-    return null; // We should never see this. For debugging.
+
+    return null;
   }
 
 
