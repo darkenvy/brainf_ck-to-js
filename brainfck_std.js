@@ -21,56 +21,61 @@ module.exports = function Tape(arr, input, options) {
 
   // ------------ Methods ------------ //
   this.left = function() {
-    if (this.current > 0) {
-      this.current -= 1;
-    } else {
+    this.current -= arguments[0] || 1;
+    if (this.current < 0) {
+      this.current = 0;
       console.log('tape indices -1 attempted');
     }
+
   }
 
   this.right = function() {
-    this.current += 1;
-    if (reel.length < this.current + 1) {
+    this.current += arguments[0] || 1;
+    while (reel.length < this.current + 1) {
       reel.push(0);
     }
   }
 
   this.add = function() {
-    // Wrap around to zero
+    reel[this.current] += arguments[0] || 1;
+
+    // Allow wrapping around to zero
     if (reel[this.current] >= Number.MAX_SAFE_INTEGER) {
-      reel[this.current] = 0;
-    } else {
-      reel[this.current] += 1;
+      reel[this.current] = 0 + reel[this.current];
     }
   }
 
   this.subtract = function() {
-    // Wrap around to 2^53 - 1
-    if (reel[this.current] > 0) {
-      reel[this.current] -= 1;
-    } else {
-      reel[this.current] = Number.MAX_SAFE_INTEGER;
+    reel[this.current] -= arguments[0] || 1
+    // Allow wrapping around to 2^53 - 1
+    if (reel[this.current] < 0) {
+      reel[this.current] = Number.MAX_SAFE_INTEGER + reel[this.current]; // + b/c reel[this.current will be a negative]
     }
   }
 
   this.output = function() {
-    if (reel[this.current] !== null) {
-      console.log(reel[this.current]);
-      // console.log(ascii[reel[this.current]]);
-    }
+    // console.log(arguments[0]||1);
+    // for (var j=0; j<arguments[0]||1; j++) {
+      if (reel[this.current] !== null) {
+        console.log(reel[this.current]);
+        // console.log(ascii[reel[this.current]]);
+      }
+    // }
   }
   this.input = function() {
-    reel[this.current] = input[inputIdx];
-    inputIdx += 1;
+    // for (var j=0; j<arguments[0]||1; j++) {
+      reel[this.current] = input[inputIdx];
+      inputIdx += 1;
 
-    // Halt the program safely when out of input
-    if (inputIdx > input.length-1 && allowQuit) {
-      console.log('Reached the end of the input. Quitting brainf_ck');
-      process.exit();
-    } else if (inputIdx > input.length-1) {
-      reel[this.current] = null;
-      return -1;
-    }
+      // Halt the program safely when out of input
+      if (inputIdx > input.length-1 && allowQuit) {
+        console.log('Reached the end of the input. Quitting brainf_ck');
+        process.exit();
+      } else if (inputIdx > input.length-1) {
+        reel[this.current] = null;
+        return -1;
+      }
+    // }
   }
 
   // ------- Bracket Matching -------- //
