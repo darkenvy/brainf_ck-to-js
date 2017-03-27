@@ -85,7 +85,7 @@ for (let i=0; i<inFile.length; i++) {
 
 // Truncate multiples into single command with arguments
 outFile = outFile.replace(/(reel\.add\(\);\n)+/gm, function(m) {
-  return `reel.add(${m.split('\n').length-1})\n`
+  return `reel.add(${m.split('\n').length-1})\n`; // crazy way to count the matches
 });
 
 console.log('wrote file');
