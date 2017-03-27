@@ -3,15 +3,17 @@
 // ie: ascii[33] is the codepoint for '!'
 
 // NOTE: May not need
-var iso88591 = `,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,!,",#,$,%,&,',(,),*,+,,,-,.,
-/,0,1,2,3,4,5,6,7,8,9,:,;,<,=,>,?,@,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,
-V,W,X,Y,Z,[,\\,],_,\`,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,{,|,
-},~,,,,,,,,,,,,,,,,,,,¡,¢,£,¤,¥,¦,§,¨,©,ª,«,¬,,®,¯,°,±,²,³,´,µ,¶,·,¸,¹,º,»,¼,
-½,¾,¿,À,Á,Â,Ã,Ä,Å,Æ,Ç,È,É,Ê,Ë,Ì,Í,Î,Ï,Ð,Ñ,Ò,Ó,Ô,Õ,Ö,×,Ø,Ù,Ú,Û,Ü,Ý,Þ,ß,à,á,â,ã,
-ä,å,æ,ç,è,é,ê,ë,ì,í,î,ï,ð,ñ,ò,ó,ô,õ,ö,÷,ø,ù,ú,û,ü,ý,þ,ÿ`;
-var ascii = iso88591.split(',');
+// var iso88591 = `,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,!,",#,$,%,&,',(,),*,+,,,-,.,
+// /,0,1,2,3,4,5,6,7,8,9,:,;,<,=,>,?,@,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,
+// V,W,X,Y,Z,[,\\,],_,\`,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,{,|,
+// },~,,,,,,,,,,,,,,,,,,,¡,¢,£,¤,¥,¦,§,¨,©,ª,«,¬,,®,¯,°,±,²,³,´,µ,¶,·,¸,¹,º,»,¼,
+// ½,¾,¿,À,Á,Â,Ã,Ä,Å,Æ,Ç,È,É,Ê,Ë,Ì,Í,Î,Ï,Ð,Ñ,Ò,Ó,Ô,Õ,Ö,×,Ø,Ù,Ú,Û,Ü,Ý,Þ,ß,à,á,â,ã,
+// ä,å,æ,ç,è,é,ê,ë,ì,í,î,ï,ð,ñ,ò,ó,ô,õ,ö,÷,ø,ù,ú,û,ü,ý,þ,ÿ`;
+// var ascii = iso88591.split(',');
 
-module.exports = function Tape(arr, input) {
+module.exports = function Tape(arr, input, options) {
+  var allowQuit = options && options.hasOwnProperty('allowQuit') ? false : true;
+  console.log('allowQuit', allowQuit);
   var reel = arr || [0];
   var inputIdx = 0;
   // var lastUsedIdx = 0;
@@ -52,17 +54,22 @@ module.exports = function Tape(arr, input) {
   }
 
   this.output = function() {
-    console.log(reel[this.current]);
-    // console.log(ascii[reel[this.current]]);
+    if (reel[this.current] !== null) {
+      console.log(reel[this.current]);
+      // console.log(ascii[reel[this.current]]);
+    }
   }
   this.input = function() {
     reel[this.current] = input[inputIdx];
     inputIdx += 1;
 
     // Halt the program safely when out of input
-    if (inputIdx > input.length-1) {
+    if (inputIdx > input.length-1 && allowQuit) {
       console.log('Reached the end of the input. Quitting brainf_ck');
       process.exit();
+    } else if (inputIdx > input.length-1) {
+      reel[this.current] = null;
+      return -1;
     }
   }
 
