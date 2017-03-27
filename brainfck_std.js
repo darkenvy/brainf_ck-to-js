@@ -1,6 +1,8 @@
 // var ascii is set up in a way so that you can convert integer points to
 // the cooresponding ascii. http://cs.stanford.edu/people/miles/iso8859.html
 // ie: ascii[33] is the codepoint for '!'
+
+// NOTE: May not need
 var iso88591 = `,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,!,",#,$,%,&,',(,),*,+,,,-,.,
 /,0,1,2,3,4,5,6,7,8,9,:,;,<,=,>,?,@,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,
 V,W,X,Y,Z,[,\\,],_,\`,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,{,|,
@@ -9,8 +11,9 @@ V,W,X,Y,Z,[,\\,],_,\`,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,{,|,
 ä,å,æ,ç,è,é,ê,ë,ì,í,î,ï,ð,ñ,ò,ó,ô,õ,ö,÷,ø,ù,ú,û,ü,ý,þ,ÿ`;
 var ascii = iso88591.split(',');
 
-function Tape(arr) {
+module.exports = function Tape(arr, input) {
   var reel = arr || [0];
+  var inputIdx = 0;
   // var lastUsedIdx = 0;
   this.current = 0;
 
@@ -49,11 +52,50 @@ function Tape(arr) {
   }
 
   this.output = function() {
-    console.log(ascii[reel[this.current]]);
+    console.log(reel[this.current]);
+    // console.log(ascii[reel[this.current]]);
   }
-  this.input = function(input) {
-    reel[this.current] = input;
+  this.input = function() {
+    reel[this.current] = input[inputIdx];
+    inputIdx += 1;
+
+    // Halt the program safely when out of input
+    if (inputIdx > input.length-1) {
+      console.log('Reached the end of the input. Quitting brainf_ck');
+      process.exit();
+    }
   }
+
+  // ------- Bracket Matching -------- //
+  this.findPrevBracket = function(instructions, currIdx) {
+    // Only find the previous bracket if the current cell is nonzero
+    if (reel[currIdx] == 0) {
+      return currIdx;
+    }
+
+    // We are looking for the [ bracket
+    // We start at the current idx given to us
+    // We NEED to find the matching bracket
+    for (var k=currIdx-1, brackets=0; k>-1; k--) {
+      // every time we find a ], we need to increment brackets
+      // this way, we can find the pairs
+      // console.log(k);
+      if (instructions[k] === ']') {
+        // console.log('inside 1');
+        brackets += 1;
+      } else if (instructions[k] === '[' && brackets > 0) {
+        // console.log('inside 2');
+        // We found a bracket. But it's not ours. So we decrement and continue
+        brackets -= 1;
+      } else if (instructions[k] === '[' && brackets == 0) {
+        // console.log('inside 3', 'returning ', k);
+        // only return k if all matching brackets have been paired up
+        return k;
+      }
+    }
+    return null; // We should never see this. For debugging.
+  }
+
 
   // ------------ Cleanup ------------ //
   function trimReel() {
@@ -65,11 +107,3 @@ function Tape(arr) {
     console.log(reel);
   }
 }
-
-var primary = new Tape();
-console.log(primary);
-primary.right();
-primary.add();
-primary.output();
-primary.view();
-// module.exports = {}
