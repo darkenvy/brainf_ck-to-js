@@ -84,6 +84,9 @@ for (let i=0; i<inFile.length; i++) {
 // Find canceling out phrases
 
 // Truncate multiples into single command with arguments
+outFile = outFile.replace(/(reel\.add\(\);\n)+/gm, function(m) {
+  return `reel.add(${m.split('\n').length-1})\n`
+});
 
 console.log('wrote file');
 fs.writeFile('out/program.js', outFile);

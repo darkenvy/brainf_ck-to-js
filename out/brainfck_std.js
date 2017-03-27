@@ -54,28 +54,23 @@ module.exports = function Tape(arr, input, options) {
   }
 
   this.output = function() {
-    // console.log(arguments[0]||1);
-    // for (var j=0; j<arguments[0]||1; j++) {
-      if (reel[this.current] !== null) {
-        console.log(reel[this.current]);
-        // console.log(ascii[reel[this.current]]);
-      }
-    // }
+    if (reel[this.current] !== null) {
+      console.log(reel[this.current]);
+      // console.log(ascii[reel[this.current]]);
+    }
   }
   this.input = function() {
-    // for (var j=0; j<arguments[0]||1; j++) {
-      reel[this.current] = input[inputIdx];
-      inputIdx += 1;
+    reel[this.current] = input[inputIdx];
+    inputIdx += 1;
 
-      // Halt the program safely when out of input
-      if (inputIdx > input.length-1 && allowQuit) {
-        console.log('Reached the end of the input. Quitting brainf_ck');
-        process.exit();
-      } else if (inputIdx > input.length-1) {
-        reel[this.current] = null;
-        return -1;
-      }
-    // }
+    // Halt the program safely when out of input
+    if (inputIdx > input.length-1 && allowQuit) {
+      console.log('Reached the end of the input. Quitting brainf_ck');
+      process.exit();
+    } else if (inputIdx > input.length-1) {
+      reel[this.current] = null;
+      return -1;
+    }
   }
 
   // ------- Bracket Matching -------- //
