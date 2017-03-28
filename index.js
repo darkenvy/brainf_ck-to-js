@@ -8,9 +8,5 @@ inReel  = JSON.parse(inReel).reel;
 inInput = inInput.split('');
 inFile  = inFile.split('');
 
-let simReel = new Brainf_ck(inReel, inInput, {allowQuit: false});
-
-for (let i in inFile) {
-  simReel.cmd(inFile[i]);
-}
-// console.log('ininput: ', inInput);
+let simReel = new Brainf_ck(inFile, inReel, inInput, {allowQuit: false});
+simReel.start();

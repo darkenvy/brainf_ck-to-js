@@ -1,5 +1,4 @@
-module.exports = function Tape(arr, inputFile, options) {
-  var unicode = require('./brainfck_codepoints_std');
+module.exports = function Tape(program, arr, inputFile, options) {
   var allowQuit = options && options.hasOwnProperty('allowQuit') ? false : true;
   var reel = arr || [0];
   var inputIdx = 0;
@@ -26,30 +25,24 @@ module.exports = function Tape(arr, inputFile, options) {
 
   this.add = function() {
     reel[current] += 1;
-    // Allow wrapping around to zero
-    if (reel[current] >= Number.MAX_SAFE_INTEGER) {
+    if (reel[current] >= Number.MAX_SAFE_INTEGER) { // Allow wrapping around to zero
       reel[current] = 0 + reel[current];
     }
   }
 
   this.subtract = function() {
     reel[current] -= 1;
-    // Allow wrapping around to 2^53 - 1
-    if (reel[current] < 0) {
-      reel[current] = Number.MAX_SAFE_INTEGER + reel[current]; // + b/c reel[current will be a negative]
+    if (reel[current] < 0) { // Allow wrapping around to 2^53 - 1
+      reel[current] = Number.MAX_SAFE_INTEGER + reel[current];
     }
   }
 
   this.output = function() {
-    if (unicode.byInt.hasOwnProperty(reel[current])) {
-      console.log(unicode.byInt[ reel[current] ]);
-    }
+    console.log(String.fromCharCode(reel[current]));
   }
 
   this.input = function() {
-    if (unicode.byChar.hasOwnProperty(inputFile[inputIdx])) {
-      reel[current] = unicode.byChar[inputFile[inputIdx]];
-    }
+    reel[current] = inputFile[inputIdx].codePointAt(0);
     inputIdx += 1;
 
     // Halt the program safely when out of input
@@ -64,6 +57,12 @@ module.exports = function Tape(arr, inputFile, options) {
   // ------------------------------------------------ //
   //                    Methods                       //
   // ------------------------------------------------ //
+  this.start = function() {
+    for (var i=0; i<program.length; i++) {
+      var jmp = this.cmd(program[i]);
+      if (jmp) i = jmp;
+    }
+  }
 
   this.cmd = function(fn) {
     switch(fn) {
@@ -86,10 +85,13 @@ module.exports = function Tape(arr, inputFile, options) {
         this.input();
         break;
       case '[':
+        // return 1
         break;
       case ']':
+        // return 1
         break;
     }
+    return null;
   }
 
 
