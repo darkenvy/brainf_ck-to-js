@@ -87,6 +87,10 @@ module.exports = function Tape(program, arr, inputFile, options) {
     for (var i=0; i<program.length; i++) {
       var jmp = this.cmd(program[i], i);
       if (jmp) i = jmp;
+      if (reel.length > 10000) {
+        console.log('Tape length exceeded. Quit brainf_ck');
+        process.exit()
+      }
     }
     console.log('reel: ', reel);
   }
