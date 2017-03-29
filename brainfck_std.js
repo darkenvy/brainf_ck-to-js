@@ -25,15 +25,15 @@ module.exports = function Tape(program, arr, inputFile, options) {
 
   this.add = function() {
     reel[current] += 1;
-    if (reel[current] >= Number.MAX_SAFE_INTEGER) { // Allow wrapping around to zero
+    if (reel[current] >= 256) {
       reel[current] = 0 + reel[current];
     }
   }
 
   this.subtract = function() {
     reel[current] -= 1;
-    if (reel[current] < 0) { // Allow wrapping around to 2^53 - 1
-      reel[current] = Number.MAX_SAFE_INTEGER + reel[current];
+    if (reel[current] < 0) {
+      reel[current] = 256 + reel[current];
     }
   }
 
@@ -53,18 +53,45 @@ module.exports = function Tape(program, arr, inputFile, options) {
       reel[current] = 0;
     }
   }
+
+  this.jumpBack = function(idx) {
+    for (var k=idx-1, brackets=0; k>0; k--) {
+      if (program[k] == ']') {
+        brackets += 1;
+      } else if (program[k] === '[' && brackets > 0) {
+        brackets -= 1;
+      } else if (program[k] === '[' && brackets === 0) {
+        return k;
+      }
+    }
+    return null;
+  }
+
+  this.jumpForward = function(idx) {
+    for (var k=idx+1, brackets=0; k<program.length; k++) {
+      if (program[k] == '[') {
+        brackets += 1;
+      } else if (program[k] === ']' && brackets > 0) {
+        brackets -= 1;
+      } else if (program[k] === ']' && brackets === 0) {
+        return k;
+      }
+    }
+    return null;
+  }
   
   // ------------------------------------------------ //
   //                    Methods                       //
   // ------------------------------------------------ //
   this.start = function() {
     for (var i=0; i<program.length; i++) {
-      var jmp = this.cmd(program[i]);
+      var jmp = this.cmd(program[i], i);
       if (jmp) i = jmp;
     }
+    console.log('reel: ', reel);
   }
 
-  this.cmd = function(fn) {
+  this.cmd = function(fn, idx) {
     switch(fn) {
       case '>':
         this.right();
@@ -85,10 +112,10 @@ module.exports = function Tape(program, arr, inputFile, options) {
         this.input();
         break;
       case '[':
-        // return 1
+        if (reel[current] === 0) return this.jumpForward(idx);
         break;
       case ']':
-        // return 1
+        if (reel[current] !== 0) return this.jumpBack(idx);
         break;
     }
     return null;
