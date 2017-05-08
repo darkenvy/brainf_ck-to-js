@@ -13,26 +13,24 @@ inFile  = inFile.split('');
 
 
 function random() {
-  let bf = `
-  >>>++[
-      <++++++++[
-          <[<++>-]>>[>>]+>>+[
-              -[->>+<<<[<[<<]<+>]>[>[>>]]]
-              <[>>[-]]>[>[-<<]>[<+<]]+<<
-          ]<[>+<-]>>-
-      ]<.[-]>>
-  ]
-  `;
-
-
+  return new Brainf_ck({
+    limit: 2500000,
+    code: `
+      >>>++[
+          <++++++++[
+              <[<++>-]>>[>>]+>>+[
+                  -[->>+<<<[<[<<]<+>]>[>[>>]]]
+                  <[>>[-]]>[>[-<<]>[<+<]]+<<
+              ]<[>+<-]>>-
+          ]<.[-]>>
+      ]`
+  }).run();
 }
 
-let simReel = new Brainf_ck({
+console.log(random());
+
+console.log(new Brainf_ck({
   code: '+[,.]',
   input: 'RenoMcDonald',
   limit: 25
-}).run();
-// let simReel = new Brainf_ck('+[,.]', 'RenoMcDonald', [], {limit: 25}).run();
-console.log(simReel);
-
-// let simReel = new Brainf_ck(``);
+}).run());

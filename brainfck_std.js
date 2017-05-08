@@ -5,7 +5,7 @@ module.exports = function Tape(options) {
   //   options = {code: options};
   // }
   var program    = options.code  || '';
-  var inputFile  = options.input || 'error';
+  var inputFile  = options.input || '';
   var reel       = options.reel  || [0];
   var inputIdx   = 0;
   var current    = 0;
@@ -16,7 +16,6 @@ module.exports = function Tape(options) {
   
   var outPrint   = '';
 
-  console.log('limit', program,inputFile);
   // ------------------------------------------------ //
   //                   BF Functions                   //
   // ------------------------------------------------ //
