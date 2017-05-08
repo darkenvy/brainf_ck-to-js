@@ -8,5 +8,8 @@ inReel  = JSON.parse(inReel).reel;
 inInput = inInput.split('');
 inFile  = inFile.split('');
 
-let simReel = new Brainf_ck(inFile, inReel, inInput, {allowQuit: false});
-simReel.start();
+let simReel = new Brainf_ck(inFile, inReel, inInput, {}).start();
+// simReel.start();
+console.log(simReel);
+
+// let simReel = new Brainf_ck(``);

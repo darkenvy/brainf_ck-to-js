@@ -3,6 +3,7 @@ module.exports = function Tape(program, arr, inputFile, options) {
   var reel = arr || [0];
   var inputIdx = 0;
   var current = 0;
+  var outPrint = '';
 
   // ------------------------------------------------ //
   //                   BF Functions                   //
@@ -38,20 +39,17 @@ module.exports = function Tape(program, arr, inputFile, options) {
   }
 
   this.output = function() {
-    console.log(String.fromCharCode(reel[current]));
+    // console.log(String.fromCharCode(reel[current]));
+    outPrint += String.fromCharCode(reel[current]);
   }
 
   this.input = function() {
+    // Halt the program safely when out of input
+    if (inputIdx > inputFile.length-1 && allowQuit) return null;
+    else if (inputIdx > inputFile.length-1) reel[current] = 0;
+
     reel[current] = inputFile[inputIdx].codePointAt(0);
     inputIdx += 1;
-
-    // Halt the program safely when out of input
-    if (inputIdx > inputFile.length-1 && allowQuit) {
-      console.log('Reached the end of the input. Quitting brainf_ck');
-      process.exit();
-    } else if (inputIdx > inputFile.length-1) {
-      reel[current] = 0;
-    }
   }
 
   this.jumpBack = function(idx) {
@@ -86,13 +84,10 @@ module.exports = function Tape(program, arr, inputFile, options) {
   this.start = function() {
     for (var i=0; i<program.length; i++) {
       var jmp = this.cmd(program[i], i);
-      if (jmp) i = jmp;
-      if (reel.length > 10000) {
-        console.log('Tape length exceeded. Quit brainf_ck');
-        process.exit()
-      }
+      if (jmp === null || reel.length > 10000) return outPrint;
+      else if (jmp) i = jmp;
     }
-    console.log('reel: ', reel);
+    return outPrint;
   }
 
   this.cmd = function(fn, idx) {
@@ -113,7 +108,7 @@ module.exports = function Tape(program, arr, inputFile, options) {
         this.output();
         break;
       case ',':
-        this.input();
+        if (this.input() === null) return null;
         break;
       case '[':
         if (reel[current] === 0) return this.jumpForward(idx);
@@ -122,9 +117,6 @@ module.exports = function Tape(program, arr, inputFile, options) {
         if (reel[current] !== 0) return this.jumpBack(idx);
         break;
     }
-    return null;
   }
-
-
 
 }
