@@ -1,10 +1,22 @@
-module.exports = function Tape(program, arr, inputFile, options) {
-  var allowQuit = options && options.hasOwnProperty('allowQuit') ? false : true;
-  var reel = arr || [0];
-  var inputIdx = 0;
-  var current = 0;
-  var outPrint = '';
+module.exports = function Tape(options) {
+  // program, inputFile, arr, options
+  // if (Array.isArray(options) || typeof options !== Object) {
+  //   console.log('conversion ran');
+  //   options = {code: options};
+  // }
+  var program    = options.code  || '';
+  var inputFile  = options.input || 'error';
+  var reel       = options.reel  || [0];
+  var inputIdx   = 0;
+  var current    = 0;
+  
+  var cycles     = 0;
+  var limit      = options.limit || 0;
+  var allowQuit  = options && options.hasOwnProperty('allowQuit') ? false : true;
+  
+  var outPrint   = '';
 
+  console.log('limit', program,inputFile);
   // ------------------------------------------------ //
   //                   BF Functions                   //
   // ------------------------------------------------ //
@@ -81,11 +93,17 @@ module.exports = function Tape(program, arr, inputFile, options) {
   // ------------------------------------------------ //
   //                    Methods                       //
   // ------------------------------------------------ //
-  this.start = function() {
+  this.run = function() {
     for (var i=0; i<program.length; i++) {
       var jmp = this.cmd(program[i], i);
       if (jmp === null || reel.length > 10000) return outPrint;
       else if (jmp) i = jmp;
+
+      // Manage limit
+      if (limit > 0) {
+        cycles++;
+        if (cycles >= limit) break;
+      }
     }
     return outPrint;
   }
@@ -118,5 +136,5 @@ module.exports = function Tape(program, arr, inputFile, options) {
         break;
     }
   }
-
+  
 }

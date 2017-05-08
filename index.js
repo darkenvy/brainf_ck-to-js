@@ -8,8 +8,31 @@ inReel  = JSON.parse(inReel).reel;
 inInput = inInput.split('');
 inFile  = inFile.split('');
 
-let simReel = new Brainf_ck(inFile, inReel, inInput, {}).start();
+// let simReel = new Brainf_ck(inFile, inInput, inReel).start();
 // simReel.start();
+
+
+function random() {
+  let bf = `
+  >>>++[
+      <++++++++[
+          <[<++>-]>>[>>]+>>+[
+              -[->>+<<<[<[<<]<+>]>[>[>>]]]
+              <[>>[-]]>[>[-<<]>[<+<]]+<<
+          ]<[>+<-]>>-
+      ]<.[-]>>
+  ]
+  `;
+
+
+}
+
+let simReel = new Brainf_ck({
+  code: '+[,.]',
+  input: 'RenoMcDonald',
+  limit: 25
+}).run();
+// let simReel = new Brainf_ck('+[,.]', 'RenoMcDonald', [], {limit: 25}).run();
 console.log(simReel);
 
 // let simReel = new Brainf_ck(``);
